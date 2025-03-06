@@ -1,3 +1,4 @@
+import streamlit as st
 import pandas as pd
 import numpy as np
 import re
@@ -45,8 +46,8 @@ model.fit(X_train, y_train)
 
 # Evaluate Model
 y_pred = model.predict(X_test)
-print("Model Accuracy:", accuracy_score(y_test, y_pred))
-print("Classification Report:\n", classification_report(y_test, y_pred))
+accuracy = accuracy_score(y_test, y_pred)
+classification_rep = classification_report(y_test, y_pred)
 
 # Function to Predict New Emails
 def predict_email(email):
@@ -55,10 +56,19 @@ def predict_email(email):
     prediction = model.predict(email_vector)[0]  # Predict spam or not
     return "Spam" if prediction == 1 else "Not Spam"
 
-# User Input for Email Testing
-while True:
-    email_text = input("\nEnter an email to check (or type 'exit' to stop): ")
-    if email_text.lower() == 'exit':
-        print("Exiting the program. Goodbye!")
-        break
-    print("Prediction:", predict_email(email_text))
+# Streamlit App
+st.title("Email Spam Detection")
+
+st.write("## Model Evaluation")
+st.write(f"**Model Accuracy:** {accuracy}")
+st.write("**Classification Report:**")
+st.text(classification_rep)
+
+st.write("## Predict New Emails")
+email_text = st.text_area("Enter an email to check:")
+if st.button("Predict"):
+    if email_text:
+        prediction = predict_email(email_text)
+        st.write(f"**Prediction:** {prediction}")
+    else:
+        st.write("Please enter an email text to predict.")
